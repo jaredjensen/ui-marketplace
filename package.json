@@ -1,45 +1,29 @@
 {
   "name": "ui-marketplace",
   "version": "1.0.0",
-  "description": "UI Marketplace",
-  "main": "index.js",
+  "description": "Avanade UI library",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "lite-server"
   },
-  "author": "Jared Jensen",
-  "license": "ISC",
-  "dependencies": {
-    "@angular/common": "~2.4.0",
-    "@angular/compiler": "~2.4.0",
-    "@angular/core": "~2.4.0",
-    "@angular/forms": "~2.4.0",
-    "@angular/http": "~2.4.0",
-    "@angular/platform-browser": "~2.4.0",
-    "@angular/platform-browser-dynamic": "~2.4.0",
-    "@angular/router": "~3.4.0",
-    "angular-in-memory-web-api": "~0.2.4",
-    "systemjs": "0.19.40",
-    "core-js": "^2.4.1",
-    "rxjs": "5.0.1",
-    "zone.js": "^0.7.4"
-  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
   "devDependencies": {
-    "browser-sync": "^2.17.5",
     "glob": "^7.1.1",
     "gulp": "^3.9.1",
-    "gulp-concat": "^2.6.0",
+    "gulp-concat": "^2.6.1",
     "gulp-cssmin": "^0.1.7",
     "gulp-header": "^1.8.8",
-    "gulp-live-server": "^0.0.30",
+    "gulp-jshint": "^2.0.4",
     "gulp-rename": "^1.2.2",
-    "gulp-sass": "^2.3.2",
-    "gulp-tslint": "^6.1.3",
-    "gulp-typescript": "^3.1.2",
-    "gulp-uglify": "^2.0.0",
-    "pump": "^1.0.1",
-    "require-dir": "^0.3.1",
-    "tslint": "^3.15.1",
-    "typescript": "^2.0.7"
+    "gulp-sass": "^3.1.0",
+    "gulp-tap": "^0.1.3",
+    "gulp-uglify": "^2.0.1",
+    "gulp-util": "^3.0.8",
+    "jshint": "^2.9.4",
+    "lite-server": "^2.2.2",
+    "pump": "^1.0.2",
+    "require-dir": "^0.3.1"
   },
   "repository": {}
 }

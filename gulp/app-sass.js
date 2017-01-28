@@ -1,4 +1,5 @@
 var gulp = require('gulp');
+var SASS_ROOT = 'app/scss';
 
 // Generate app.scss
 gulp.task('sass-gen', function () {
@@ -6,13 +7,13 @@ gulp.task('sass-gen', function () {
     var banner = '// Generated at ' + new Date().toISOString() + '.  Do not edit.';
     var imports = [ banner ];
 
-    return glob('content/app/scss/modules/**/*.scss', function (err, files) {
+    return glob(SASS_ROOT + '/modules/**/*.scss', function (err, files) {
         for (var i = 0; i < files.length; i++) {
-            imports.push('@import "' + files[i].replace('content/app/scss', '.') + '";');
+            imports.push('@import "' + files[i].replace(SASS_ROOT, '.') + '";');
         }
 
         var fs = require('fs');
-        fs.writeFileSync('content/app/scss/app.scss', imports.join('\r\n'));
+        fs.writeFileSync(SASS_ROOT + '/app.scss', imports.join('\r\n'));
     });
 });
 
@@ -23,12 +24,12 @@ gulp.task('sass', ['sass-gen'], function () {
     var header = require('gulp-header');
     var rename = require('gulp-rename');
     var banner = '/* Generated at ' + new Date().toISOString() + '.  Do not edit. */\r\n';
-    return gulp.src('content/app/scss/app.scss')
+    return gulp.src(SASS_ROOT + '/app.scss')
         .pipe(sass())
         .pipe(header(banner))
-        .pipe(gulp.dest('content/app'))
+        .pipe(gulp.dest('app'))
         .pipe(cssmin())
         .pipe(rename({ suffix: '.min' }))
         .pipe(header(banner))
-        .pipe(gulp.dest('content/app'));
+        .pipe(gulp.dest('app'));
 });

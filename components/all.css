@@ -1,0 +1,10 @@
+/* Generated at 2017-01-28T00:51:11.930Z.  Do not edit. */
+.button {
+  background-color: #ccc;
+  color: #333;
+  display: inline-block;
+  padding: 0.5rem 3rem; }
+
+.button-primary {
+  background-color: #00f;
+  color: #ccc; }
