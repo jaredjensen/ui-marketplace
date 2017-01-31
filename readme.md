@@ -41,16 +41,20 @@ Dev notes:
 * Modules can have optional `load()` and `init()` methods, which will be called at app startup
     * Subscribe to the event bus in `load()`
     * Publish startup events in `init()`
+* App-specific CSS selectors begin with an underscore
 * Standard tasks of linting, transpiling, combining, minifying, and code generation are handled with Gulp tasks
 * [lite-server][1] is configured to watch only the final web assets to trigger browsersync
 
 [1]: https://github.com/johnpapa/lite-server
 
-## TO-DO:
+## To Do
 
 * Editor module:
     * Render list of components
     * Allow drag/drop
     * Set component properties
     * Trigger manifest download
-* Update
+* Maniest module:
+    * Scrub HTML templates to remove app-specific markup
+    * Generate ZIP file
+* Build out additional Components
