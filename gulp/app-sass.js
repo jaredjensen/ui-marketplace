@@ -2,7 +2,7 @@ var gulp = require('gulp');
 var SASS_ROOT = 'app/scss';
 
 // Generate app.scss
-gulp.task('sass-gen', function () {
+gulp.task('app-sass-gen', function () {
     var glob = require('glob');
     var banner = '// Generated at ' + new Date().toISOString() + '.  Do not edit.';
     var imports = [ banner ];
@@ -18,7 +18,7 @@ gulp.task('sass-gen', function () {
 });
 
 // Create app.css and app.min.css
-gulp.task('sass', ['sass-gen'], function () {
+gulp.task('app-sass', ['app-sass-gen'], function () {
     var sass = require('gulp-sass');
     var cssmin = require('gulp-cssmin');
     var header = require('gulp-header');

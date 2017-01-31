@@ -1,6 +1,6 @@
 var gulp = require('gulp');
 
-gulp.task('generate-component-sass', function () {
+gulp.task('component-sass-gen', function () {
     var glob = require('glob');
     var banner = '// Generated at ' + new Date().toISOString() + '.  Do not edit.';
     var imports = [ banner ];
@@ -17,7 +17,7 @@ gulp.task('generate-component-sass', function () {
     });
 });
 
-gulp.task('component-sass', ['generate-component-sass'], function () {
+gulp.task('component-sass', ['component-sass-gen'], function () {
     var sass = require('gulp-sass');
     var cssmin = require('gulp-cssmin');
     var header = require('gulp-header');

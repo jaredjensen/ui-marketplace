@@ -1,0 +1,8 @@
+{
+    "name": "Button",
+    "properties": {
+        "color": { "label": "Color", "type": "text", "defaultValue": "primary" },
+        "text": { "label": "Text", "type": "text", "defaultValue": "Click me" },
+        "url": { "label": "URL", "type": "text", "defaultValue": "http://www.avanade.com" }
+    }
+}

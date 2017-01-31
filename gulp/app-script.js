@@ -1,13 +1,12 @@
 var gulp = require('gulp');
 
-gulp.task('lint', function () {
+gulp.task('app-lint', function () {
     const jshint = require('gulp-jshint');
     return gulp.src('app/js/**/*.js')
-        .pipe(jshint())/*
-        .pipe(jshint.reporter('YOUR_REPORTER_HERE'))*/;
+        .pipe(jshint());
 });
 
-gulp.task('script', ['lint'], function (cb) {
+gulp.task('app-script', ['app-lint'], function (cb) {
     var concat = require('gulp-concat');
     gulp.src(['app/js/app.js', 'app/js/modules/*.js'])
         .pipe(concat('app.js'))

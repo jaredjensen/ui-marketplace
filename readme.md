@@ -15,7 +15,7 @@ Key architecture points:
 
 ## Installation
 
-The marketplace is intended to be hosted locally, served by [lite-server](https://github.com/johnpapa/lite-server]).  Install it by cloning the project, then run `npm start`.
+The marketplace is intended to be hosted locally, served by [lite-server][1].  Install it by cloning the project, then run `npm start`.
 
 ## Contributing
 
@@ -26,3 +26,31 @@ The marketplace is intended to be hosted locally, served by [lite-server](https:
 1. Submit a pull request
 
 When coding, run `gulp` to start the watch task that assembles static assets.
+
+Dev notes:
+
+* The app is divided into modules:
+    * Components (generated) - Concatenated version of all _component_.json files
+    * Templates (generated) - Concatenated JSON representation of all HTML templates
+    * Events - Simple pub/sub message bus
+    * Content - Manages a content dictionary for authoring
+    * Manifest - Manages the components and content for a page
+    * Renderer - Manages the DOM for a given Manifest
+    * Editor - Manages the DOM for editing tasks
+* Modules are loosely coupled through the event bus and should not reference each other directly
+* Modules can have optional `load()` and `init()` methods, which will be called at app startup
+    * Subscribe to the event bus in `load()`
+    * Publish startup events in `init()`
+* Standard tasks of linting, transpiling, combining, minifying, and code generation are handled with Gulp tasks
+* [lite-server][1] is configured to watch only the final web assets to trigger browsersync
+
+[1]: https://github.com/johnpapa/lite-server
+
+## TO-DO:
+
+* Editor module:
+    * Render list of components
+    * Allow drag/drop
+    * Set component properties
+    * Trigger manifest download
+* Update
