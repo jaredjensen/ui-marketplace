@@ -15,9 +15,7 @@ Key architecture points:
 
 ## Installation
 
-The marketplace is intended to be hosted locally, served by [lite-server][1].  Install it by first cloning the project, then run `npm install`. After the console installs all the included npm packages, then run `npm start`.
-
-**Note:** you only have to run `npm install` once. From then on, you only need to run, `npm start`.
+To set up your environment, clone the repository and run `npm install`.  After that initial setup, you will only need to run `npm start` to begin working.  The marketplace is hosted locally using [lite-server][1], so no further configuration should be necessary.
 
 ## Contributing
 
