@@ -1,0 +1,10 @@
+@import "../variables.scss";
+@import "../mixins.scss";
+
+.editor-container {
+    padding-top: $navigation-height;
+    height: 100%;
+    .editor-container-row {
+        height: 100%;
+    }
+}
