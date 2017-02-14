@@ -1,0 +1,12 @@
+@import "../variables.scss";
+@import "../mixins.scss";
+
+.editor-navigation {
+    background-color: $primary-background;
+    border-bottom: solid 2px darken($secondary-backgound, 40%);
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: $navigation-height;
+    z-index: 1;
+}

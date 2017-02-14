@@ -1,0 +1,12 @@
+@import "../variables.scss";
+@import "../mixins.scss";
+
+.editor-dom-explorer {
+    background-color: $secondary-backgound;
+    border-top: solid 1px darken($secondary-backgound, 10%);
+    height: $dom-explorer-height;
+    .breadcrumb {
+        margin: 0;
+        border-radius: 0;
+    }
+}

@@ -1,0 +1,9 @@
+@import "../variables.scss";
+@import "../mixins.scss";
+
+.editor-left-panel {
+    background-color: $secondary-backgound;
+    border-right: solid 2px darken($secondary-backgound, 10%);
+    overflow: scroll;
+    max-height: 100vh;
+}
