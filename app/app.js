@@ -39,17 +39,18 @@
   };
 }(window.UIM));
 (function (app) {
-	
+
 	app.content = {
-		get: getContent
+		getContent: getContent,
+		getPropertyType: getPropertyType
 	};
 
 	function getContent(manifestItem) {
-		return manifestItem.contentId ? app.manifest.current.content[manifestItem.contentId] : getDefaultContent(manifestItem.name);
+		return manifestItem.content || getDefaultContent(manifestItem.name);
 	}
 
 	function getDefaultContent(componentName) {
-		if (!app.components[componentName]) return {};
+		if (!app.components[componentName] || !app.components[componentName].properties) return {};
 		var content = {};
 		var props = app.components[componentName].properties;
 		for (var k in props) {
@@ -57,6 +58,10 @@
 			content[k] = props[k].defaultValue;
 		}
 		return content;
+	}
+
+	function getPropertyType(componentName, propertyName) {
+		return (!app.components[componentName] || !app.components[componentName].properties) ? 'text' : app.components[componentName].properties[propertyName].type;
 	}
 
 }(window.UIM));
@@ -68,6 +73,7 @@
 (function (app, $) {
 
 	app.editor = {
+		activeItem: null,
 		load: load,
 		initComponent: initComponent
 	};
@@ -84,7 +90,6 @@
 
 	function initComponent(elem) {
 		var el = $(elem);
-		//el.click(onComponentClicked);
 		makeDraggable(el, false);
 		makeDroppable(el);
 	}
@@ -94,7 +99,8 @@
 	}
 
 	function loadEditor() {
-		$('#editor-canvas').on('click', '._component', onComponentClicked);
+		$('#editor-components').on('click', '._component', onComponentClicked);
+		$('#editor-apply-properties').on('click', applyProperties);
 	}
 
 	function onComponentCreated(e, args) {
@@ -102,18 +108,24 @@
 	}
 
 	function onComponentClicked(e) {
-		// todo: determine why all clicks are occurring on the "page" element
+		e.stopPropagation();
+		e.preventDefault();
+
+		$('#editor-components ._component-active').removeClass('_component-active');
+
 		var el = $(this);
 		var manifestItem = el.data('manifestItem');
 		el.addClass('_component-active');
 		renderProperties(manifestItem);
+
+		app.editor.activeItem = manifestItem;
 		app.events.publish('component-selected', el);
 	}
 
 	function makeDraggable(el, revert) {
 		el.draggable({
 			revert: revert,
-			snap: '#editor-canvas ._container'
+			snap: '#editor-components ._container'
 		});
 	}
 
@@ -135,22 +147,39 @@
 		var props = $('#editor-properties');
 		props.empty();
 
-		var content = app.content.get(manifestItem);
+		var content = app.content.getContent(manifestItem);
 		var i = 0;
+		var hasProps = false;
+
 		for (var k in content) {
 			if (!content.hasOwnProperty(k)) continue;
 
+			var type = app.content.getPropertyType(manifestItem.name, k);
+
 			var html = '<div class="form-group row">' +
 				'<label for="field_' + i + '" class="col-3 col-form-label col-form-label-sm">' + k + '</label>' +
-                '<div class="col-9">' +
-            	'<input class="form-control form-control-sm" type="text" value="" id="field_' + i + '">' +
-                '</div>' +
+                '<div class="col-9"><input class="form-control form-control-sm" data-name="' + k + '" type="' + type + '" value="" id="field_' + i + '"></div>' +
                 '</div>';
 
 			var field = $(html);
 			field.find('input').val(content[k]);
 			props.append(field);
+
+			hasProps = true;
 		}
+
+		$('#editor-properties-none')[hasProps ? 'hide' : 'show']();
+		$('#editor-apply-properties')[hasProps ? 'show' : 'hide']();
+	}
+
+	function applyProperties() {
+		var content = {};
+		$('#editor-properties input').each(function () {
+			var input = $(this);
+			var name = input.data('name');
+			content[name] = input.val();
+		});
+		app.manifest.setContent(app.editor.activeItem, content);
 	}
 
 }(window.UIM, window.jQuery));
@@ -174,94 +203,88 @@
 }(window.UIM, window.jQuery));
 (function (app) {
 
-    app.manifest = {
-        addComponent: addComponent,
-        createComponent: createComponent,
-        current: null,
-        //getManifest: getManifest,
-        init: init
-    };
+	app.manifest = {
+		addComponent: addComponent,
+		createComponent: createComponent,
+		current: null,
+		init: init,
+		setContent: setContent
+	};
 
-    function init() {
-        app.manifest.current = getManifest();
-        app.events.publish('manifest-changed');
-    }
+	function init() {
+		app.manifest.current = getManifest();
+		notify();
+	}
 
-    function addComponent(componentName, parent) {
-        parent.components = parent.components || [];
-        parent.components.push(createComponent(componentName));
-        app.events.publish('manifest-changed');
-    }
+	function addComponent(componentName, parent) {
+		parent.components = parent.components || [];
+		parent.components.push(createComponent(componentName));
+		notify();
+	}
 
-    function createComponent(name) {
-        return {
-            name: name,
-            components: [],
-            contentId: null
-        };
-    }
+	function setContent(manifestItem, content) {
+		manifestItem.content = content;
+		notify();
+	}
 
-    function getManifest() {
-        return {
-            content: {
-                buttonGoogle: {
-                    color: 'primary',
-                    text: 'Google',
-                    url: 'https://www.google.com'
-                },
-                buttonBing: {
-                    color: 'secondary',
-                    text: 'Bing',
-                    url: 'https://www.bing.com'
-                },
-                buttonYahoo: {
-                    color: 'primary',
-                    text: 'Yahoo',
-                    url: 'https://www.yahoo.com'
-                },
-                buttonStackOverflow: {
-                    color: 'secondary',
-                    text: 'Stack Overflow',
-                    url: 'https://www.stackoverflow.com'
-                }
-            },
-            page: {
-                name: 'page',
-                components: [{
-                    name: 'container',
-                    components: [{
-                        name: 'layout-12',
-                        components: [{
-                            name: 'button',
-                            contentId: 'buttonGoogle'
-                        }, {
-                            name: 'button',
-                            contentId: 'buttonBing'
-                        }]
-                    }, {
-                        name: 'layout-8-4',
-                        components: [{
-                            name: 'button',
-                            contentId: 'buttonYahoo',
-                            container: 'left'
-                        }, {
-                            name: 'button',
-                            contentId: 'buttonStackOverflow',
-                            container: 'right'
-                        }]
-                    }]
-                }]
-            }
-        };
-    }
+	function notify() {
+		app.events.publish('manifest-changed');
+	}
 
-    // function setParents(node) {
-    //     if (!node.components || node.components.length === 0) return;
-    //     for (var i = 0; i < node.components.length; i++) {
-    //         node.components[i].parent = node;
-    //         setParents(node.components[i]);
-    //     }
-    // }
+	function createComponent(name) {
+		return {
+			name: name,
+			components: []
+		};
+	}
+
+	function getManifest() {
+		return {
+			page: {
+				name: 'page',
+				components: [{
+					name: 'container',
+					components: [{
+						name: 'layout-12',
+						components: [{
+							name: 'button',
+							content: {
+								color: 'primary',
+								text: 'Google',
+								url: 'https://www.google.com'
+							}
+						}, {
+							name: 'button',
+							content: {
+								color: 'secondary',
+								text: 'Bing',
+								url: 'https://www.bing.com'
+							}
+						}]
+					}, {
+						name: 'layout-8-4',
+						components: [{
+							name: 'button',
+							content: {
+								color: 'primary',
+								text: 'Yahoo',
+								url: 'https://www.yahoo.com'
+							},
+							container: 'left'
+						}, {
+							name: 'button',
+							content: {
+								color: 'secondary',
+								text: 'Stack Overflow',
+								url: 'https://www.stackoverflow.com'
+							},
+							container: 'right'
+						}]
+					}]
+				}]
+			}
+		};
+	}
 
 }(window.UIM));
 /**
@@ -272,7 +295,7 @@
 (function (app, $, tmpl) {
 
 	var MANIFEST_ITEM_DATA_KEY = 'manifestItem';
-	var _root = $('#wires');
+	var _root = $('#editor-components');
 
 	app.renderer = {
 		load: load,
@@ -321,13 +344,13 @@
 		}
 
 		// Populate with content
-		var content = app.content.get(manifestItem);
+		var content = app.content.getContent(manifestItem);
 		var template = tmpl.compile(html); // todo: move template compilation into content module for performance
 		html = template(content);
 
 		// Add to the DOM
 		var componentElement = $(html).appendTo(parentElement);
-		componentElement.addClass('_component');
+		componentElement.addClass('_component' + (manifestItem === app.editor.activeItem ? ' _component-active' : ''));
 		attachManifestItem(componentElement, manifestItem);
 		app.events.publish('component-created', componentElement);
 

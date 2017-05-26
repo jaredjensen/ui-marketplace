@@ -1,4 +1,4 @@
-/* Generated at 2017-05-25T18:29:40.495Z.  Do not edit. */
+/* Generated at 2017-05-26T20:41:18.481Z.  Do not edit. */
 .editor-canvas {
   background: white;
   height: 100%;
@@ -46,18 +46,19 @@
 body {
   height: 100vh; }
 
+._component-active:after {
+  border: 5px solid #900;
+  content: "";
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%; }
+
 ._container {
   min-height: 20px;
   position: relative; }
   ._container:hover:before {
-    background: #aaa;
-    content: " ";
-    height: 20px;
-    left: 2px;
-    position: absolute;
-    top: 2px;
-    width: 20px; }
-  ._container:hover:after {
     border: 2px solid #aaa;
     content: " ";
     height: 100%;
@@ -65,3 +66,11 @@ body {
     position: absolute;
     top: 0;
     width: 100%; }
+  ._container:hover:after {
+    background: #aaa;
+    content: " ";
+    height: 20px;
+    left: 2px;
+    position: absolute;
+    top: 2px;
+    width: 20px; }

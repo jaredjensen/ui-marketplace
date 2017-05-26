@@ -1,15 +1,16 @@
 (function (app) {
-	
+
 	app.content = {
-		get: getContent
+		getContent: getContent,
+		getPropertyType: getPropertyType
 	};
 
 	function getContent(manifestItem) {
-		return manifestItem.contentId ? app.manifest.current.content[manifestItem.contentId] : getDefaultContent(manifestItem.name);
+		return manifestItem.content || getDefaultContent(manifestItem.name);
 	}
 
 	function getDefaultContent(componentName) {
-		if (!app.components[componentName]) return {};
+		if (!app.components[componentName] || !app.components[componentName].properties) return {};
 		var content = {};
 		var props = app.components[componentName].properties;
 		for (var k in props) {
@@ -17,6 +18,10 @@
 			content[k] = props[k].defaultValue;
 		}
 		return content;
+	}
+
+	function getPropertyType(componentName, propertyName) {
+		return (!app.components[componentName] || !app.components[componentName].properties) ? 'text' : app.components[componentName].properties[propertyName].type;
 	}
 
 }(window.UIM));

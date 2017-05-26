@@ -6,6 +6,7 @@
 (function (app, $) {
 
 	app.editor = {
+		activeItem: null,
 		load: load,
 		initComponent: initComponent
 	};
@@ -22,7 +23,6 @@
 
 	function initComponent(elem) {
 		var el = $(elem);
-		//el.click(onComponentClicked);
 		makeDraggable(el, false);
 		makeDroppable(el);
 	}
@@ -32,7 +32,8 @@
 	}
 
 	function loadEditor() {
-		$('#editor-canvas').on('click', '._component', onComponentClicked);
+		$('#editor-components').on('click', '._component', onComponentClicked);
+		$('#editor-apply-properties').on('click', applyProperties);
 	}
 
 	function onComponentCreated(e, args) {
@@ -40,18 +41,24 @@
 	}
 
 	function onComponentClicked(e) {
-		// todo: determine why all clicks are occurring on the "page" element
+		e.stopPropagation();
+		e.preventDefault();
+
+		$('#editor-components ._component-active').removeClass('_component-active');
+
 		var el = $(this);
 		var manifestItem = el.data('manifestItem');
 		el.addClass('_component-active');
 		renderProperties(manifestItem);
+
+		app.editor.activeItem = manifestItem;
 		app.events.publish('component-selected', el);
 	}
 
 	function makeDraggable(el, revert) {
 		el.draggable({
 			revert: revert,
-			snap: '#editor-canvas ._container'
+			snap: '#editor-components ._container'
 		});
 	}
 
@@ -73,22 +80,39 @@
 		var props = $('#editor-properties');
 		props.empty();
 
-		var content = app.content.get(manifestItem);
+		var content = app.content.getContent(manifestItem);
 		var i = 0;
+		var hasProps = false;
+
 		for (var k in content) {
 			if (!content.hasOwnProperty(k)) continue;
 
+			var type = app.content.getPropertyType(manifestItem.name, k);
+
 			var html = '<div class="form-group row">' +
 				'<label for="field_' + i + '" class="col-3 col-form-label col-form-label-sm">' + k + '</label>' +
-                '<div class="col-9">' +
-            	'<input class="form-control form-control-sm" type="text" value="" id="field_' + i + '">' +
-                '</div>' +
+                '<div class="col-9"><input class="form-control form-control-sm" data-name="' + k + '" type="' + type + '" value="" id="field_' + i + '"></div>' +
                 '</div>';
 
 			var field = $(html);
 			field.find('input').val(content[k]);
 			props.append(field);
+
+			hasProps = true;
 		}
+
+		$('#editor-properties-none')[hasProps ? 'hide' : 'show']();
+		$('#editor-apply-properties')[hasProps ? 'show' : 'hide']();
+	}
+
+	function applyProperties() {
+		var content = {};
+		$('#editor-properties input').each(function () {
+			var input = $(this);
+			var name = input.data('name');
+			content[name] = input.val();
+		});
+		app.manifest.setContent(app.editor.activeItem, content);
 	}
 
 }(window.UIM, window.jQuery));

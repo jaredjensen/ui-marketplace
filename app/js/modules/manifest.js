@@ -1,92 +1,86 @@
 (function (app) {
 
-    app.manifest = {
-        addComponent: addComponent,
-        createComponent: createComponent,
-        current: null,
-        //getManifest: getManifest,
-        init: init
-    };
+	app.manifest = {
+		addComponent: addComponent,
+		createComponent: createComponent,
+		current: null,
+		init: init,
+		setContent: setContent
+	};
 
-    function init() {
-        app.manifest.current = getManifest();
-        app.events.publish('manifest-changed');
-    }
+	function init() {
+		app.manifest.current = getManifest();
+		notify();
+	}
 
-    function addComponent(componentName, parent) {
-        parent.components = parent.components || [];
-        parent.components.push(createComponent(componentName));
-        app.events.publish('manifest-changed');
-    }
+	function addComponent(componentName, parent) {
+		parent.components = parent.components || [];
+		parent.components.push(createComponent(componentName));
+		notify();
+	}
 
-    function createComponent(name) {
-        return {
-            name: name,
-            components: [],
-            contentId: null
-        };
-    }
+	function setContent(manifestItem, content) {
+		manifestItem.content = content;
+		notify();
+	}
 
-    function getManifest() {
-        return {
-            content: {
-                buttonGoogle: {
-                    color: 'primary',
-                    text: 'Google',
-                    url: 'https://www.google.com'
-                },
-                buttonBing: {
-                    color: 'secondary',
-                    text: 'Bing',
-                    url: 'https://www.bing.com'
-                },
-                buttonYahoo: {
-                    color: 'primary',
-                    text: 'Yahoo',
-                    url: 'https://www.yahoo.com'
-                },
-                buttonStackOverflow: {
-                    color: 'secondary',
-                    text: 'Stack Overflow',
-                    url: 'https://www.stackoverflow.com'
-                }
-            },
-            page: {
-                name: 'page',
-                components: [{
-                    name: 'container',
-                    components: [{
-                        name: 'layout-12',
-                        components: [{
-                            name: 'button',
-                            contentId: 'buttonGoogle'
-                        }, {
-                            name: 'button',
-                            contentId: 'buttonBing'
-                        }]
-                    }, {
-                        name: 'layout-8-4',
-                        components: [{
-                            name: 'button',
-                            contentId: 'buttonYahoo',
-                            container: 'left'
-                        }, {
-                            name: 'button',
-                            contentId: 'buttonStackOverflow',
-                            container: 'right'
-                        }]
-                    }]
-                }]
-            }
-        };
-    }
+	function notify() {
+		app.events.publish('manifest-changed');
+	}
 
-    // function setParents(node) {
-    //     if (!node.components || node.components.length === 0) return;
-    //     for (var i = 0; i < node.components.length; i++) {
-    //         node.components[i].parent = node;
-    //         setParents(node.components[i]);
-    //     }
-    // }
+	function createComponent(name) {
+		return {
+			name: name,
+			components: []
+		};
+	}
+
+	function getManifest() {
+		return {
+			page: {
+				name: 'page',
+				components: [{
+					name: 'container',
+					components: [{
+						name: 'layout-12',
+						components: [{
+							name: 'button',
+							content: {
+								color: 'primary',
+								text: 'Google',
+								url: 'https://www.google.com'
+							}
+						}, {
+							name: 'button',
+							content: {
+								color: 'secondary',
+								text: 'Bing',
+								url: 'https://www.bing.com'
+							}
+						}]
+					}, {
+						name: 'layout-8-4',
+						components: [{
+							name: 'button',
+							content: {
+								color: 'primary',
+								text: 'Yahoo',
+								url: 'https://www.yahoo.com'
+							},
+							container: 'left'
+						}, {
+							name: 'button',
+							content: {
+								color: 'secondary',
+								text: 'Stack Overflow',
+								url: 'https://www.stackoverflow.com'
+							},
+							container: 'right'
+						}]
+					}]
+				}]
+			}
+		};
+	}
 
 }(window.UIM));

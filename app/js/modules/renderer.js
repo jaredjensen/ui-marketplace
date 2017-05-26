@@ -6,7 +6,7 @@
 (function (app, $, tmpl) {
 
 	var MANIFEST_ITEM_DATA_KEY = 'manifestItem';
-	var _root = $('#wires');
+	var _root = $('#editor-components');
 
 	app.renderer = {
 		load: load,
@@ -55,13 +55,13 @@
 		}
 
 		// Populate with content
-		var content = app.content.get(manifestItem);
+		var content = app.content.getContent(manifestItem);
 		var template = tmpl.compile(html); // todo: move template compilation into content module for performance
 		html = template(content);
 
 		// Add to the DOM
 		var componentElement = $(html).appendTo(parentElement);
-		componentElement.addClass('_component');
+		componentElement.addClass('_component' + (manifestItem === app.editor.activeItem ? ' _component-active' : ''));
 		attachManifestItem(componentElement, manifestItem);
 		app.events.publish('component-created', componentElement);
 
