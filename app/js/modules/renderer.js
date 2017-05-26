@@ -1,52 +1,83 @@
+/**
+ * The renderer is responsible for marrying the manifest model to the DOM and updating the browser.  It updates the manifest
+ * in response to editor events and updates the DOM in response to manifest changes.
+ */
+
 (function (app, $, tmpl) {
-    app.renderer = {
-        renderManifest: renderManifest,
-        renderComponent: renderComponent,
-        load: load
-    };
 
-    var root = $('#wires');
+	var MANIFEST_ITEM_DATA_KEY = 'manifestItem';
+	var _root = $('#wires');
 
-    function load() {
-        app.events.subscribe('manifest-changed', onManifestChanged);
-    }
+	app.renderer = {
+		load: load,
+		//renderManifest: renderManifest,
+		renderComponent: renderComponent
+	};
 
-    function onManifestChanged(e, args) {
-        renderManifest(args);
-    }
+	function load() {
+		bindEvents();
+	}
 
-    function renderManifest(manifest) {
-        root.empty();
-        renderComponent(root, manifest.page, manifest.content);
-    }
+	function bindEvents() {
+		app.events.subscribe('component-dropped', onComponentDropped);
+		app.events.subscribe('manifest-changed', onManifestChanged);
+	}
 
-    function renderComponent(parentElement, component, content) {
+	function onComponentDropped(e, args) {
+		if (!args.componentName) {
+			console.warn('Component dropped with no name', args);
+			return;
+		}
 
-        // Fetch the template
-        var html = app.templates[component.name];
-        if (!html) {
-            console.warn('Missing HTML template for "' + component.name + '".');
-            return;
-        }
+		var parentComponentElement = args.containerElement.is('._component') ? args.containerElement : args.containerElement.closest('._component');
+		var parentItem = parentComponentElement.data(MANIFEST_ITEM_DATA_KEY);
+		if (!parentItem) {
+			console.warn('Component dropped, but parent is not bound', args);
+			return;
+		}
 
-        // Populate with content
-        if (component.content) {
-            var data = content[component.content];
-            var template = tmpl.compile(html); // todo: move template compilation into content module for performance
-            html = template(data);
-        }
+		app.manifest.addComponent(args.componentName, parentItem);
+	}
 
-        // Add to the DOM
-        var componentElement = $(html).appendTo(parentElement);
-        app.events.publish('component-created', componentElement);
+	function onManifestChanged() {
+		_root.empty();
+		attachManifestItem(_root, app.manifest.current.page);
+		renderComponent(_root, app.manifest.current.page);
+	}
 
-        // Recurse child components
-        $.each(component.components, function () {
-            var isContainer = componentElement.is('._container');
-            var containerSelector = '._container' + (this.container ? '-' + this.container : '');
-            var container = isContainer ? componentElement : componentElement.find(containerSelector).first();
-            renderComponent(container, this, content);
-        });
-    }
+	function renderComponent(parentElement, manifestItem) {
+
+		// Fetch the template
+		var html = app.templates[manifestItem.name];
+		if (!html) {
+			console.warn('Missing HTML template for "' + manifestItem.name + '".');
+			return;
+		}
+
+		// Populate with content
+		var content = app.content.get(manifestItem);
+		var template = tmpl.compile(html); // todo: move template compilation into content module for performance
+		html = template(content);
+
+		// Add to the DOM
+		var componentElement = $(html).appendTo(parentElement);
+		componentElement.addClass('_component');
+		attachManifestItem(componentElement, manifestItem);
+		app.events.publish('component-created', componentElement);
+
+		if (!manifestItem.components) return;
+
+		// Recurse child components
+		$.each(manifestItem.components, function () {
+			var isContainer = componentElement.is('._container');
+			var containerSelector = '._container' + (this.container ? '-' + this.container : '');
+			var container = isContainer ? componentElement : componentElement.find(containerSelector).first();
+			renderComponent(container, this);
+		});
+	}
+
+	function attachManifestItem(element, manifestItem) {
+		element.data(MANIFEST_ITEM_DATA_KEY, manifestItem);
+	}
 
 }(window.UIM, window.jQuery, window.Handlebars));

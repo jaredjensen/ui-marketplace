@@ -1,4 +1,4 @@
-/* Generated at 2017-02-14T19:02:03.113Z.  Do not edit. */
+/* Generated at 2017-05-25T18:29:40.495Z.  Do not edit. */
 .editor-canvas {
   background: white;
   height: 100%;
@@ -38,6 +38,10 @@
   border-left: solid 2px #d0d5d8;
   overflow: scroll;
   max-height: 100vh; }
+
+#editor-toolbox {
+  overflow: visible;
+  z-index: 999; }
 
 body {
   height: 100vh; }

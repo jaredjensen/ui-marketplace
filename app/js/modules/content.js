@@ -1,20 +1,22 @@
 (function (app) {
-    app.content = {
-        buttonGoogle: {
-            text: 'Google',
-            url: 'https://www.google.com'
-        },
-        buttonBing: {
-            text: 'Bing',
-            url: 'https://www.bing.com'
-        },
-        buttonYahoo: {
-            text: 'Yahoo',
-            url: 'https://www.yahoo.com'
-        },
-        buttonStackOverflow: {
-            text: 'Stack Overflow',
-            url: 'https://www.stackoverflow.com'
-        }
-    };
+	
+	app.content = {
+		get: getContent
+	};
+
+	function getContent(manifestItem) {
+		return manifestItem.contentId ? app.manifest.current.content[manifestItem.contentId] : getDefaultContent(manifestItem.name);
+	}
+
+	function getDefaultContent(componentName) {
+		if (!app.components[componentName]) return {};
+		var content = {};
+		var props = app.components[componentName].properties;
+		for (var k in props) {
+			if (!props.hasOwnProperty(k)) continue;
+			content[k] = props[k].defaultValue;
+		}
+		return content;
+	}
+
 }(window.UIM));
